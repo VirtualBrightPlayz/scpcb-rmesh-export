@@ -136,7 +136,7 @@ DebugLog CountChildren(h)
 			txs\fn = XE_XFilen$
 			
 			;only add texture if a new one is present
-			If Not noadd
+			If True
 				WriteLine XE_XF,"Material dx_brush"+Str(Tindex)+" {"
 				WriteLine XE_XF,"   1.000000;1.000000;1.000000;1.000000;;"
 				WriteLine XE_XF,"   0.000000;"
@@ -157,7 +157,7 @@ DebugLog CountChildren(h)
 
 	For cc =CountChildren(h) To 1 Step -1
 		chi=GetChild (h,cc)
-		RecursiveAddMaterial(chi,forcematerial$)
+		RecursiveAddMaterial(chi,forcematerial$,e_directory$)
 	Next 
 
 End Function
@@ -713,12 +713,13 @@ End Function
 
 
 Function getCmdArg$(args$,arg$)
+	DebugLog Len(arg$)
 
-	Local argpos% = Instr%(args$,arg$)+Len(arg$)
-	Local startarg% = Instr%(args$,Chr(34),argpos%)
-	Local endarg% = Instr%(args$,Chr(34),startarg%+1)
+	Local argpos = Instr(args$,arg$)+Len(arg$)
+	Local startarg = Instr(args$,Chr(34),argpos)
+	Local endarg = Instr(args$,Chr(34),startarg+1)
 
-	Return Mid$(args$,startarg%+1,(endarg%-startarg%)-1)
+	Return Mid$(args$,startarg+1,(endarg-startarg)-1)
 
 End Function
 
@@ -730,17 +731,17 @@ Print ""
 ;Local fname$ = Input("RMesh To load: ")
 
 
-Local cmdline$ = CommandLine$()
+Local cmdline$ = CommandLine()
 
-;Print cmdline$
+DebugLog cmdline$
 
 ;Input(":")
 
-Local fname$ = getCmdArg(cmdline$,"-in")
-
-Local indir$ = getCmdArg(cmdline$,"-indir")
-Local outdir$ = getCmdArg(cmdline$,"-outdir")
-
+Local fname$ = getCmdArg(CommandLine(),"-file")
+Local indir$ = getCmdArg(CommandLine(),"-indir")
+Local outdir$ = getCmdArg(CommandLine(),"outdir")
+DebugLog "Indir "+indir$
+DebugLog "Input "+fname$
 
 
 Graphics3D 1280,720,32,2
@@ -757,6 +758,10 @@ Graphics3D 1280,720,32,2
 Global mesh% = LoadRMesh(indir$+fname$)
 
 writemesh(mesh%,outdir$,fname$+".x")
+
+
+
+Input(":")
 
 End
 
